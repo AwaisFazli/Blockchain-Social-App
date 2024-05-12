@@ -1,19 +1,19 @@
 export const news = [
   {
-    category: 'Clever Programmer • LIVE',
-    title: 'CP is live on YouTube!',
+    category: 'Awais Mutahir • LIVE',
+    title: 'Awais is live on YouTube!',
     image:
-      'https://kajabi-storefronts-production.kajabi-cdn.com/kajabi-storefronts-production/themes/284832/settings_images/rLlCifhXRJiT0RoN2FjK_Logo_roundbackground_black.png',
+      'https://media.licdn.com/dms/image/D4D03AQFmRxQfBU-nIQ/profile-displayphoto-shrink_800_800/0/1671643615487?e=2147483647&v=beta&t=uBdpAeBb3rkqOA-jzsfvv0tL3XT_El4UAlJ3LKzSQYg',
   },
   {
     category: 'Databases • Trending',
     title:
-      'Sanity is giving you free Boosted plan, use --coupon cleverprogrammer',
+      'Sanity is giving you free Boosted plan, use --coupon Maima-Ismail',
     image: 'https://avatars.githubusercontent.com/u/17177659?s=280&v=4',
   },
   {
     category: 'Web3.0 • Trending',
-    title: 'Blockchain developers make over $150k',
+    title: 'Blockchain developers demand rises',
     image:
       'https://cloudfront-us-east-1.images.arcpublishing.com/coindesk/L424HUS65FGRVFPTYYPG24CIYI.jpg',
   },
@@ -27,16 +27,16 @@ export const news = [
 
 export const whoToFollow = [
   {
-    name: 'Rafeh Qazi',
-    handle: '@cleverqazi',
+    name: 'Awais Mutahir',
+    handle: '@awaisfazli',
     avatar:
-      'https://pbs.twimg.com/profile_images/1472075657920221184/JhAI3WGm_400x400.jpg',
+      'https://media.licdn.com/dms/image/D4D03AQFmRxQfBU-nIQ/profile-displayphoto-shrink_800_800/0/1671643615487?e=2147483647&v=beta&t=uBdpAeBb3rkqOA-jzsfvv0tL3XT_El4UAlJ3LKzSQYg',
   },
   {
-    name: 'David Rakosi',
-    handle: '@0xDavidRakosi',
+    name: 'Maima Ismail',
+    handle: '@maima-ismail',
     avatar:
-      'https://pbs.twimg.com/profile_images/1282571486465855491/98xO6N0F_400x400.jpg',
+      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRMMDSV9N2qVWJwGQetckgZ0sJJxJ8f026cqjmB30DsOQ&s',
   },
   {
     name: 'Sanity.io',
