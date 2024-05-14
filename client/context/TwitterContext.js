@@ -1,8 +1,28 @@
 import { createContext, useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
 import { client } from '../lib/client'
+import { ethers } from 'ethers'
+import { contractABI, contractAddress } from "../lib/constants";
 
 export const TwitterContext = createContext()
+
+let metamask;
+
+if (typeof window !== "undefined") {
+  metamask = window.ethereum;
+}
+
+const getEthereumContract = () => {
+  const provider = new ethers.providers.Web3Provider(metamask);
+  const signer = provider.getSigner();
+  const transactionContract = new ethers.Contract(
+    contractAddress,
+    contractABI,
+    signer
+  );
+
+  return transactionContract;
+};
 
 export const TwitterProvider = ({ children }) => {
   const [appStatus, setAppStatus] = useState('')
@@ -163,31 +183,34 @@ export const TwitterProvider = ({ children }) => {
   const getCurrentUserDetails = async (userAccount = currentAccount) => {
     if (appStatus !== 'connected') return
 
-    const query = `
-      *[_type == "users" && _id == "${userAccount}"]{
-        "tweets": tweets[]->{timestamp, tweet}|order(timestamp desc),
-        name,
-        profileImage,
-        isProfileImageNft,
-        coverImage,
-        walletAddress
-      }
-    `
-    const response = await client.fetch(query)
+    // const query = `
+    //   *[_type == "users" && _id == "${userAccount}"]{
+    //     "tweets": tweets[]->{timestamp, tweet}|order(timestamp desc),
+    //     name,
+    //     profileImage,
+    //     isProfileImageNft,
+    //     coverImage,
+    //     walletAddress
+    //   }
+    // `
+    // const response = await client.fetch(query)
 
-    const profileImageUri = await getNftProfileImage(
-      response[0].profileImage,
-      response[0].isProfileImageNft,
-    )
+    // const profileImageUri = await getNftProfileImage(
+    //   response[0].profileImage,
+    //   response[0].isProfileImageNft,
+    // )
 
-    setCurrentUser({
-      tweets: response[0].tweets,
-      name: response[0].name,
-      profileImage: profileImageUri,
-      walletAddress: response[0].walletAddress,
-      coverImage: response[0].coverImage,
-      isProfileImageNft: response[0].isProfileImageNft,
-    })
+    const contract = await getEthereumContract();
+    const response = await contract.getUserProfile(currentAccount)
+
+    const userData = {
+      name: response.name,
+      profileImage: `https://gateway.pinata.cloud/ipfs/${response.profileImage}`,
+      walletAddress: response.walletAddress,
+      coverImage: `https://gateway.pinata.cloud/ipfs/${response.coverImage}`,
+      isProfileImageNft: false,
+    }
+    setCurrentUser(userData)
   }
 
   return (

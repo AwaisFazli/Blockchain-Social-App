@@ -12,6 +12,7 @@ import { VscTwitter } from 'react-icons/vsc'
 import Modal from 'react-modal'
 import { customStyles } from '../lib/constants'
 import ProfileImageMinter from './profile/mintingModal/ProfileImageMinter'
+import ProfileUpdater from './profile/mintingModal/ProfileUpdater'
 import {
   BsBookmark,
   BsBookmarkFill,
@@ -100,7 +101,7 @@ function Sidebar({ initialSelectedIcon }: SidebarProps) {
           }
           className={style.tweetButton}
         >
-          Mint
+          Update Profile
         </div>
       </div>
       <div className={style.profileButton}>
@@ -133,7 +134,7 @@ function Sidebar({ initialSelectedIcon }: SidebarProps) {
         onRequestClose={() => router.back()}
         style={customStyles}
       >
-        <ProfileImageMinter />
+        <ProfileUpdater />
       </Modal>
     </div>
   )

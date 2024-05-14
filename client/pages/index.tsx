@@ -1,11 +1,12 @@
-import { useContext } from 'react'
-import { TwitterContext } from '../context/TwitterContext'
-import Feed from '../components/home/Feed'
-import Sidebar from '../components/Sidebar'
-import Widgets from '../components/Widgets'
-import metamaskLogo from '../assets/metamask.png'
-import errorImg from '../assets/error.png'
-import Image from 'next/image'
+import { useContext } from "react";
+import { TwitterContext } from "../context/TwitterContext";
+import Feed from "../components/home/Feed";
+import Sidebar from "../components/Sidebar";
+import Widgets from "../components/Widgets";
+import metamaskLogo from "../assets/metamask.png";
+import errorImg from "../assets/error.png";
+import Image from "next/image";
+import { useRouter } from "next/router";
 
 const style = {
   wrapper: `flex justify-center h-screen w-screen select-none bg-[#15202b] text-white`,
@@ -13,37 +14,54 @@ const style = {
   loginContainer: `w-full h-full flex flex-col justify-center items-center pb-48`,
   walletConnectButton: `text-2xl text-black bg-white font-bold mb-[-3rem] mt-[3rem] px-6 py-4 rounded-full cursor-pointer hover:bg-[#d7dbdc]`,
   loginContent: `text-3xl font-bold text-center mt-24`,
-}
+  setProfileStyle: `bg-[#1d9bf0] hover:bg-[#1b8cd8] flex items-center justify-center font-bold rounded-3xl h-[50px] mt-[20px] cursor-pointer flex-[2] border-r border-l border-[#38444d] overflow-y-scroll`,
+};
 
 const Home = () => {
-  const { appStatus, connectWallet } = useContext(TwitterContext)
+  const { appStatus, connectWallet, currentUser, currentAccount } =
+    useContext(TwitterContext);
+  const router = useRouter();
+
+  console.log(currentUser);
 
   const app = (status = appStatus) => {
     switch (status) {
-      case 'connected':
-        return userLoggedIn
+      case "connected":
+        return userLoggedIn;
 
-      case 'notConnected':
-        return noUserFound
+      case "notConnected":
+        return noUserFound;
 
-      case 'noMetaMask':
-        return noMetaMaskFound
+      case "noMetaMask":
+        return noMetaMaskFound;
 
-      case 'error':
-        return error
+      case "error":
+        return error;
 
       default:
-        return loading
+        return loading;
     }
-  }
+  };
 
   const userLoggedIn = (
     <div className={style.content}>
-      <Sidebar initialSelectedIcon={'Home'} />
-      <Feed />
+      <Sidebar initialSelectedIcon={"Home"} />
+      {currentUser?.name ? (
+        <Feed />
+      ) : (
+        <div
+          onClick={() =>
+            router.push(`${router.pathname}/?mint=${currentAccount}`)
+          }
+          className={style.setProfileStyle}
+        >
+          Set Profile
+        </div>
+      )}
+
       <Widgets />
     </div>
-  )
+  );
 
   const noUserFound = (
     <div className={style.loginContainer}>
@@ -56,15 +74,15 @@ const Home = () => {
       </div>
       <div className={style.loginContent}>Connect to Metamask.</div>
     </div>
-  )
+  );
 
   const noMetaMaskFound = (
     <div className={style.loginContainer}>
       <Image src={metamaskLogo} width={200} height={200} />
       <div className={style.loginContent}>
         <a
-          target='_blank'
-          rel='noreferrer'
+          target="_blank"
+          rel="noreferrer"
           href={`https://metamask.io/download.html`}
         >
           You must install Metamask, a <br /> virtual Ethereum wallet, in your
@@ -72,7 +90,7 @@ const Home = () => {
         </a>
       </div>
     </div>
-  )
+  );
 
   const error = (
     <div className={style.loginContainer}>
@@ -81,15 +99,15 @@ const Home = () => {
         An error occurred. Please try again later or from another browser.
       </div>
     </div>
-  )
+  );
 
   const loading = (
     <div className={style.loginContainer}>
       <div className={style.loginContent}>Loading...</div>
     </div>
-  )
+  );
 
-  return <div className={style.wrapper}>{app(appStatus)}</div>
-}
+  return <div className={style.wrapper}>{app(appStatus)}</div>;
+};
 
-export default Home
+export default Home;
