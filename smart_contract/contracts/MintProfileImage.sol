@@ -6,20 +6,20 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 
 contract ProfileImageNfts is ERC721, Ownable {
-
     using Counters for Counters.Counter;
     using Strings for uint256;
 
     Counters.Counter _tokenIds;
     mapping(uint256 => string) _tokenURIs;
 
-    struct RenderToken{
+    struct RenderToken {
         uint256 id;
         string uri;
         string space;
     }
 
     struct Post {
+        uint256 id;
         string username;
         address author;
         uint256 timestamp;
@@ -37,48 +37,137 @@ contract ProfileImageNfts is ERC721, Ownable {
         string coverImage;
     }
 
+    struct Comment {
+        uint256 id;
+        uint256 postId;
+        string authorName;
+        address author;
+        string authorImageUrl;
+        string text;
+        uint256 timestamp;
+    }
+
+    struct Reply {
+        uint256 id;
+        uint256 commentId;
+        string authorName;
+        address author;
+        string authorImageUrl;
+        string text;
+        uint256 timestamp;
+    }
+
+    Comment[] public comments;
+    Reply[] public replies;
+
     mapping(address => UserProfile) private userProfiles;
 
-    event PostCreated(string username, address author, uint256 timestamp, string text, string imageUrl, string authorImageUrl);
-    event UserProfileCreated(address indexed user, string name, string walletAddress, string profileImage, string coverImage);
-    event UserProfileUpdated(address indexed user, string name, string walletAddress, string profileImage, string coverImage);
+    event PostCreated(
+        string username,
+        address author,
+        uint256 timestamp,
+        string text,
+        string imageUrl,
+        string authorImageUrl
+    );
+    event UserProfileCreated(
+        address indexed user,
+        string name,
+        string walletAddress,
+        string profileImage,
+        string coverImage
+    );
+    event UserProfileUpdated(
+        address indexed user,
+        string name,
+        string walletAddress,
+        string profileImage,
+        string coverImage
+    );
+    event CommentCreated(
+        uint256 postId,
+        uint256 id,
+        string authorName,
+        address author,
+        string authorImageUrl,
+        string text,
+        uint256 timestamp
+    );
+    event ReplyCreated(
+        uint256 commentId,
+        uint256 id,
+        string authorName,
+        address author,
+        string authorImageUrl,
+        string text,
+        uint256 timestamp
+    );
 
-    
-    constructor() ERC721("ProfileImageNfts","PIN"){}
+    constructor() ERC721("ProfileImageNfts", "PIN") {}
 
     function _setTokenURI(uint256 tokenId, string memory _tokenURI) internal {
         _tokenURIs[tokenId] = _tokenURI;
     }
 
-    function tokenURI(uint256 tokenId) public view virtual override returns (string memory) {
-        require(_exists(tokenId),"URI not exist on that ID");
-        string memory _RUri =  _tokenURIs[tokenId];
+    function tokenURI(
+        uint256 tokenId
+    ) public view virtual override returns (string memory) {
+        require(_exists(tokenId), "URI not exist on that ID");
+        string memory _RUri = _tokenURIs[tokenId];
         return _RUri;
     }
 
-    function getAlltoken() public view returns (RenderToken[] memory){
+    function getAlltoken() public view returns (RenderToken[] memory) {
         uint256 latestId = _tokenIds.current();
         RenderToken[] memory res = new RenderToken[](latestId);
-        for(uint256 i = 0; i  <= latestId ; i++){
-            if(_exists(i)){
+        for (uint256 i = 0; i <= latestId; i++) {
+            if (_exists(i)) {
                 string memory uri = tokenURI(i);
-                res[i] = RenderToken(i,uri," ");
+                res[i] = RenderToken(i, uri, " ");
             }
         }
         return res;
     }
 
-    function mint(address recipents, string memory _uri) public returns (uint256){
+    function mint(
+        address recipents,
+        string memory _uri
+    ) public returns (uint256) {
         uint256 newId = _tokenIds.current();
-        _mint(recipents,newId);
-        _setTokenURI(newId,_uri);
+        _mint(recipents, newId);
+        _setTokenURI(newId, _uri);
         _tokenIds.increment();
         return newId;
     }
 
-    function createPost(string memory _username, address _author, uint256 _timestamp, string memory _text, string memory _imageUrl, string memory _authorImageUrl) public {
-        posts.push(Post(_username, _author, _timestamp, _text, _imageUrl, _authorImageUrl));
-        emit PostCreated(_username, _author, _timestamp, _text, _imageUrl, _authorImageUrl);
+    uint256 public postIdCounter;
+    function createPost(
+        string memory _username,
+        string memory _text,
+        string memory _imageUrl,
+        string memory _authorImageUrl
+    ) public {
+        uint256 postId = postIdCounter;
+        postIdCounter++;
+        posts.push(
+            Post(
+                postId,
+                _username,
+                msg.sender,
+                block.timestamp,
+                _text,
+                _imageUrl,
+                _authorImageUrl
+            )
+        );
+        emit PostCreated(
+            _username,
+            msg.sender,
+            block.timestamp,
+            _text,
+            _imageUrl,
+            _authorImageUrl
+        );
     }
 
     function getPosts() public view returns (Post[] memory) {
@@ -88,38 +177,61 @@ contract ProfileImageNfts is ERC721, Ownable {
     function getUserPosts() public view returns (Post[] memory) {
         uint256 userPostCount = 0;
         address caller = msg.sender;
-        
-        for(uint256 i = 0; i < posts.length; i++) {
-            if(posts[i].author == caller) {
+
+        for (uint256 i = 0; i < posts.length; i++) {
+            if (posts[i].author == caller) {
                 userPostCount++;
             }
         }
-        
+
         Post[] memory userPosts = new Post[](userPostCount);
         uint256 index = 0;
-        
-        for(uint256 i = 0; i < posts.length; i++) {
-            if(posts[i].author == caller) {
+
+        for (uint256 i = 0; i < posts.length; i++) {
+            if (posts[i].author == caller) {
                 userPosts[index] = posts[i];
                 index++;
             }
         }
-        
+
         return userPosts;
     }
 
-    function createUserProfile(string memory _name, string memory _walletAddress, string memory _profileImage, string memory _coverImage) public {
-        userProfiles[msg.sender] = UserProfile(_name, _walletAddress, _profileImage, _coverImage);
-        emit UserProfileCreated(msg.sender, _name, _walletAddress, _profileImage, _coverImage);
+    function createUserProfile(
+        string memory _name,
+        string memory _walletAddress,
+        string memory _profileImage,
+        string memory _coverImage
+    ) public {
+        userProfiles[msg.sender] = UserProfile(
+            _name,
+            _walletAddress,
+            _profileImage,
+            _coverImage
+        );
+        emit UserProfileCreated(
+            msg.sender,
+            _name,
+            _walletAddress,
+            _profileImage,
+            _coverImage
+        );
     }
 
-    function getUserProfile(address _user) public view returns (UserProfile memory) {
+    function getUserProfile(
+        address _user
+    ) public view returns (UserProfile memory) {
         return userProfiles[_user];
     }
 
-    function updateUserProfile(string memory _name, string memory _walletAddress, string memory _profileImage, string memory _coverImage) public {
+    function updateUserProfile(
+        string memory _name,
+        string memory _walletAddress,
+        string memory _profileImage,
+        string memory _coverImage
+    ) public {
         UserProfile storage userProfile = userProfiles[msg.sender];
-        
+
         if (bytes(_name).length == 0) {
             _name = userProfile.name;
         }
@@ -135,6 +247,122 @@ contract ProfileImageNfts is ERC721, Ownable {
         userProfile.profileImage = _profileImage;
         userProfile.coverImage = _coverImage;
 
-        emit UserProfileUpdated(msg.sender, _name, _walletAddress, _profileImage, _coverImage);
+        emit UserProfileUpdated(
+            msg.sender,
+            _name,
+            _walletAddress,
+            _profileImage,
+            _coverImage
+        );
+    }
+
+    function createComment(
+        uint256 _postId,
+        string memory _authorName,
+        string memory _authorImageUrl,
+        string memory _text
+    ) public {
+        uint256 commentId = comments.length;
+        comments.push(
+            Comment(
+                commentId,
+                _postId,
+                _authorName,
+                msg.sender,
+                _authorImageUrl,
+                _text,
+                block.timestamp
+            )
+        );
+        emit CommentCreated(
+            _postId,
+            commentId,
+            _authorName,
+            msg.sender,
+            _authorImageUrl,
+            _text,
+            block.timestamp
+        );
+    }
+
+    function getCommentsByPostId(
+        uint256 _postId
+    ) public view returns (Comment[] memory) {
+        uint256 commentCount = 0;
+
+        // Count the number of comments for the post
+        for (uint256 i = 0; i < comments.length; i++) {
+            if (comments[i].postId == _postId) {
+                commentCount++;
+            }
+        }
+
+        Comment[] memory postComments = new Comment[](commentCount);
+        uint256 index = 0;
+
+        // Retrieve the comments for the post
+        for (uint256 i = 0; i < comments.length; i++) {
+            if (comments[i].postId == _postId) {
+                postComments[index] = comments[i];
+                index++;
+            }
+        }
+
+        return postComments;
+    }
+
+    function createReply(
+        uint256 _commentId,
+        string memory _authorName,
+        string memory _authorImageUrl,
+        string memory _text
+    ) public {
+        uint256 replyId = replies.length;
+        replies.push(
+            Reply(
+                replyId,
+                _commentId,
+                _authorName,
+                msg.sender,
+                _authorImageUrl,
+                _text,
+                block.timestamp
+            )
+        );
+        emit ReplyCreated(
+            _commentId,
+            replyId,
+            _authorName,
+            msg.sender,
+            _authorImageUrl,
+            _text,
+            block.timestamp
+        );
+    }
+
+    function getRepliesByCommentId(
+        uint256 _commentId
+    ) public view returns (Reply[] memory) {
+        uint256 replyCount = 0;
+
+        // Count the number of replies for the comment
+        for (uint256 i = 0; i < replies.length; i++) {
+            if (replies[i].commentId == _commentId) {
+                replyCount++;
+            }
+        }
+
+        Reply[] memory commentReplies = new Reply[](replyCount);
+        uint256 index = 0;
+
+        // Retrieve the replies for the comment
+        for (uint256 i = 0; i < replies.length; i++) {
+            if (replies[i].commentId == _commentId) {
+                commentReplies[index] = replies[i];
+                index++;
+            }
+        }
+
+        return commentReplies;
     }
 }

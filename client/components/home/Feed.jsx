@@ -39,8 +39,6 @@ function Feed() {
   const contract = getEthereumContract();
   const [posts, setPosts] = useState([]);
 
-  console.log(posts)
-
   useEffect(() => {
     const fetchPosts = async () => {
       const postsData = await contract.getPosts();
@@ -83,6 +81,7 @@ function Feed() {
           isProfileImageNft={false}
           timestamp={post.timestamp}
           postImage={post.imageUrl}
+          postId={post.id}
         />
       ))}
     </div>

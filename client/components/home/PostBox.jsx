@@ -5,8 +5,7 @@ import { RiFileGifLine, RiBarChartHorizontalFill } from "react-icons/ri";
 import { IoMdCalendar } from "react-icons/io";
 import { MdOutlineLocationOn } from "react-icons/md";
 import { pinFileToIPFS } from "../../lib/pinata";
-import { ethers } from "ethers";
-import { contractABI, contractAddress } from "../../lib/constants";
+import { getEthereumContract } from "../../lib/getContract";
 
 const style = {
   wrapper: `px-4 flex flex-row border-b border-[#38444d] pb-4`,
@@ -20,31 +19,13 @@ const style = {
   submitGeneral: `px-6 py-2 rounded-3xl font-bold`,
   inactiveSubmit: `bg-[#196195] text-[#95999e]`,
   activeSubmit: `bg-[#1d9bf0] text-white`,
-  loadingSubmit: `cursor-not-allowed opacity-50`, // Style for loading state
-};
-
-let metamask;
-
-if (typeof window !== "undefined") {
-  metamask = window.ethereum;
-}
-
-const getEthereumContract = () => {
-  const provider = new ethers.providers.Web3Provider(metamask);
-  const signer = provider.getSigner();
-  const transactionContract = new ethers.Contract(
-    contractAddress,
-    contractABI,
-    signer
-  );
-
-  return transactionContract;
+  loadingSubmit: `cursor-not-allowed opacity-50`,
 };
 
 function PostBox() {
   const [tweetMessage, setTweetMessage] = useState("");
-  const [imageFile, setImageFile] = useState(null); // state to hold the uploaded image file
-  const [loading, setLoading] = useState(false); // state to manage loading state
+  const [imageFile, setImageFile] = useState(null);
+  const [loading, setLoading] = useState(false);
   const { currentAccount, fetchTweets, currentUser } =
     useContext(TwitterContext);
   const contract = getEthereumContract();
@@ -79,13 +60,10 @@ function PostBox() {
 
       await contract.createPost(
         username,
-        currentAccount,
-        Date.now(),
         tweetMessage,
         imageUrl,
         authorImageUrl
       );
-      
 
       // Clear message and image after posting
       setTweetMessage("");
