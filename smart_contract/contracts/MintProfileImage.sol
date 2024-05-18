@@ -9,8 +9,12 @@ contract ProfileImageNfts is ERC721, Ownable {
     using Counters for Counters.Counter;
     using Strings for uint256;
 
-    Counters.Counter _tokenIds;
-    mapping(uint256 => string) _tokenURIs;
+    Counters.Counter private _tokenIds;
+    uint32 private _postIdCounter = 1;
+    uint32 private _commentIdCounter = 1;
+    uint32 private _replyIdCounter = 1;
+
+    mapping(uint256 => string) private _tokenURIs;
 
     struct RenderToken {
         uint256 id;
@@ -19,7 +23,7 @@ contract ProfileImageNfts is ERC721, Ownable {
     }
 
     struct Post {
-        uint256 id;
+        uint32 id;
         string username;
         address author;
         uint256 timestamp;
@@ -38,8 +42,8 @@ contract ProfileImageNfts is ERC721, Ownable {
     }
 
     struct Comment {
-        uint256 id;
-        uint256 postId;
+        uint32 id;
+        uint32 postId;
         string authorName;
         address author;
         string authorImageUrl;
@@ -48,8 +52,8 @@ contract ProfileImageNfts is ERC721, Ownable {
     }
 
     struct Reply {
-        uint256 id;
-        uint256 commentId;
+        uint32 id;
+        uint32 commentId;
         string authorName;
         address author;
         string authorImageUrl;
@@ -85,8 +89,8 @@ contract ProfileImageNfts is ERC721, Ownable {
         string coverImage
     );
     event CommentCreated(
-        uint256 postId,
-        uint256 id,
+        uint32 postId,
+        uint32 id,
         string authorName,
         address author,
         string authorImageUrl,
@@ -94,8 +98,8 @@ contract ProfileImageNfts is ERC721, Ownable {
         uint256 timestamp
     );
     event ReplyCreated(
-        uint256 commentId,
-        uint256 id,
+        uint32 commentId,
+        uint32 id,
         string authorName,
         address author,
         string authorImageUrl,
@@ -140,15 +144,14 @@ contract ProfileImageNfts is ERC721, Ownable {
         return newId;
     }
 
-    uint256 public postIdCounter;
     function createPost(
         string memory _username,
         string memory _text,
         string memory _imageUrl,
         string memory _authorImageUrl
     ) public {
-        uint256 postId = postIdCounter;
-        postIdCounter++;
+        uint32 postId = _postIdCounter;
+        _postIdCounter++;
         posts.push(
             Post(
                 postId,
@@ -257,12 +260,13 @@ contract ProfileImageNfts is ERC721, Ownable {
     }
 
     function createComment(
-        uint256 _postId,
+        uint32 _postId,
         string memory _authorName,
         string memory _authorImageUrl,
         string memory _text
     ) public {
-        uint256 commentId = comments.length;
+        uint32 commentId = _commentIdCounter;
+        _commentIdCounter++;
         comments.push(
             Comment(
                 commentId,
@@ -286,7 +290,7 @@ contract ProfileImageNfts is ERC721, Ownable {
     }
 
     function getCommentsByPostId(
-        uint256 _postId
+        uint32 _postId
     ) public view returns (Comment[] memory) {
         uint256 commentCount = 0;
 
@@ -312,12 +316,13 @@ contract ProfileImageNfts is ERC721, Ownable {
     }
 
     function createReply(
-        uint256 _commentId,
+        uint32 _commentId,
         string memory _authorName,
         string memory _authorImageUrl,
         string memory _text
     ) public {
-        uint256 replyId = replies.length;
+        uint32 replyId = _replyIdCounter;
+        _replyIdCounter++;
         replies.push(
             Reply(
                 replyId,
@@ -341,7 +346,7 @@ contract ProfileImageNfts is ERC721, Ownable {
     }
 
     function getRepliesByCommentId(
-        uint256 _commentId
+        uint32 _commentId
     ) public view returns (Reply[] memory) {
         uint256 replyCount = 0;
 

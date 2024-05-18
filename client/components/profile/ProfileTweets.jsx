@@ -3,6 +3,7 @@ import { TwitterContext } from '../../context/TwitterContext'
 import Post from '../Post'
 import { contractABI, contractAddress } from '../../lib/constants'
 import { ethers } from 'ethers'
+import BigNumber from 'bignumber.js';
 
 const style = {
   wrapper: `no-scrollbar`,
@@ -36,13 +37,19 @@ const ProfileTweets = () => {
   useEffect(() => {
     if (!currentUser) return
 
-    setTweets(currentUser.tweets)
     const fetchPosts = async () => {
+      
       const contract = await getEthereumContract();
 
       const posts = await contract.getUserPosts()
-      console.log(posts)
-      setTweets(posts)
+      const formattedPosts = posts.map(post => ({
+        text: post.text,
+        username: post.username,
+        imageUrl: post.imageUrl,
+        author: post.author,
+      }));
+
+      setTweets(formattedPosts);
     }
 
     fetchPosts()
@@ -60,10 +67,10 @@ const ProfileTweets = () => {
         <Post
           key={index}
           displayName={tweet.username}
-          userName={`${author.walletAddress.slice(
+          userName={`${author?.walletAddress?.slice(
             0,
             4,
-          )}...${author.walletAddress.slice(41)}`}
+          )}...${author?.walletAddress?.slice(41)}`}
           text={tweet.text}
           avatar={author.profileImage}
           timestamp={tweet.timestamp}

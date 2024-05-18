@@ -42,7 +42,6 @@ function Feed() {
   useEffect(() => {
     const fetchPosts = async () => {
       const postsData = await contract.getPosts();
-      console.log(postsData)
       setPosts(postsData);
     };
 

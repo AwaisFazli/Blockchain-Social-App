@@ -37,24 +37,43 @@ const Post = ({
   const [comments, setComments] = useState([]);
   const [commentText, setCommentText] = useState("");
   const [showCommentBox, setShowCommentBox] = useState(false);
-  const [loading, setLoading] = useState(false)
+  const [commentLoading, setCommentLoading] = useState(false);
+  const [replyLoading, setReplyLoading] = useState(false);
+  const [replies, setReplies] = useState([])
+  const [repliesText, setRepliesText] = useState("");
   const contract = getEthereumContract();
 
-  const fetchComments = async () => {
+  const fetchCommentsAndReplies = async () => {
     const postComments = await contract.getCommentsByPostId(postId);
     setComments(postComments);
+    const postReplies = {};
+    await Promise.all(
+      postComments.map(async (comment) => {
+        const commentReplies = await contract.getRepliesByCommentId(comment.id);
+        postReplies[comment.id] = commentReplies;
+      })
+    );
+    setReplies(postReplies);
   };
 
   useEffect(() => {
-    fetchComments();
+    fetchCommentsAndReplies();
   }, [contract, postId]);
 
   const handleSubmitComment = async () => {
-    setLoading(true)
+    setCommentLoading(true)
     await contract.createComment(postId, displayName, avatar, commentText);
     setCommentText("");
     fetchComments();
-    setLoading(false)
+    setRepliesText("")
+    setCommentLoading(false)
+  };
+
+  const handleSubmitReply = async (commentId, replyText) => {
+    setReplyLoading(true);
+    await contract.createReply(commentId, displayName, avatar, replyText);
+    fetchCommentsAndReplies();
+    setReplyLoading(false);
   };
 
   return (
@@ -97,7 +116,7 @@ const Post = ({
         <div className={style.footer}>
           <div
             className={`${style.footerIcon} hover:text-[#1d9bf0] hover:bg-[#1e364a]`}
-            onClick={() => setShowCommentBox(true)}
+            onClick={() => setShowCommentBox((prev) => !prev)}
           >
             <FaRegComment />
           </div>
@@ -119,25 +138,86 @@ const Post = ({
         </div>
         {showCommentBox && (
           <>
+            {/* Display comments */}
             {comments.map((comment) => (
-              <div className={style.commentBox}>
-              <div className="flex">
-                <div className="w-[55px]">
-                  <img
-                    src={comment.authorImageUrl}
-                    className="h-[50px] w-[50px] rounded-full"
-                    alt=""
-                  />
+              <div key={comment.id} className={style.commentBox}>
+                {/* Display each comment */}
+                <div className="flex">
+                  <div className="w-[55px]">
+                    <img
+                      src={comment.authorImageUrl}
+                      className="h-[50px] w-[50px] rounded-full"
+                      alt=""
+                    />
+                  </div>
+                  <div className="flex flex-grow flex-col">
+                    <span className="font-bold ml-1">{comment.authorName}</span>
+                    <div className="flex flex-grow">
+                      <span className="text-white bg-transparent w-full rounded-lg p-2 outline-none border-0">
+                        {comment.text}
+                      </span>
+                    </div>
+                  </div>
                 </div>
-                <div className="flex flex-grow flex-col">
-                  <span  className="font-bold ml-1">{comment.authorName}</span>
-                  <div className="flex flex-grow">  
-                    <span 
-                      className="text-white bg-transparent w-full rounded-lg p-2 outline-none border-0">{comment.text}</span>
+                {/* Display replies for each comment */}
+                {replies[comment.id] &&
+                  replies[comment.id].map((reply) => (
+                    <div key={reply.id} className="ml-8 mt-2">
+                      <div className="flex">
+                        <div className="w-[35px]">
+                          <img
+                            src={reply.authorImageUrl}
+                            className="h-[30px] w-[30px] rounded-full"
+                            alt=""
+                          />
+                        </div>
+                        <div className="flex flex-grow flex-col">
+                          <span className="font-bold ml-1 text-[14px]">
+                            {reply.authorName}
+                          </span>
+                          <div className="flex flex-grow">
+                            <span className="text-white text-[14px] bg-transparent w-full rounded-lg p-1 outline-none border-0">
+                              {reply.text}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                {/* Reply input box */}
+                <div className="ml-8 mt-2">
+                  <div className="flex">
+                    <div className="w-[35px]">
+                      <img
+                        src={profileImageLink}
+                        className="h-[30px] w-[30px] rounded-full"
+                        alt=""
+                      />
+                    </div>
+                    <div className="flex flex-grow flex-col">
+                      <span className="text-[14px]">{displayName}</span>
+                      <div className="flex flex-grow">
+                        <input
+                          type="text"
+                          value={repliesText}
+                          onChange={(e) => setRepliesText(e.target.value)}
+                          className="text-white bg-transparent bg-[#2a4056] w-full rounded-lg p-1 outline-none border-0"
+                          placeholder="Write a reply..."
+                        />
+                        <button
+                          onClick={() =>
+                            handleSubmitReply(comment.id, repliesText)
+                          }
+                          className="text-white ml-2 text-[14px]"
+                          disabled={replyLoading && true}
+                        >
+                          {replyLoading ? "Submitting" : "Submit"}
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
             ))}
             <div className={style.commentBox}>
               <div className="flex">
@@ -161,14 +241,15 @@ const Post = ({
                     <button
                       onClick={handleSubmitComment}
                       className="text-white ml-2"
-                      disabled={loading && true}
+                      disabled={commentLoading && true}
                     >
-                      {loading? "Submitting" : "Submit"}
+                      {commentLoading? "Submitting" : "Submit"}
                     </button>
                   </div>
                 </div>
               </div>
             </div>
+            
           </>
         )}
       </div>
