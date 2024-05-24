@@ -3,35 +3,12 @@ import { TwitterContext } from "../../context/TwitterContext";
 import PostBox from "./PostBox";
 import Post from "../Post";
 import { BsStars } from "react-icons/bs";
-import { ethers } from "ethers";
-import { contractABI, contractAddress } from "../../lib/constants";
+import {getEthereumContract} from "../../lib/getContract"
 
 const style = {
   wrapper: `flex-[2] border-r border-l border-[#38444d] overflow-y-scroll`,
   header: `sticky top-0 bg-[#15202b] z-10 p-4 flex justify-between items-center`,
   headerTitle: `text-xl font-bold`,
-};
-
-let metamask;
-
-if (typeof window !== "undefined") {
-  metamask = window.ethereum;
-}
-
-const getEthereumContract = () => {
-  if (!metamask) {
-    throw new Error("Metamask not found!");
-  }
-
-  const provider = new ethers.providers.Web3Provider(metamask);
-  const signer = provider.getSigner();
-  const transactionContract = new ethers.Contract(
-    contractAddress,
-    contractABI,
-    signer
-  );
-
-  return transactionContract;
 };
 
 function Feed() {

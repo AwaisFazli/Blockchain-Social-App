@@ -1,27 +1,8 @@
 import { createContext, useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
-import { ethers } from 'ethers'
-import { contractABI, contractAddress } from "../lib/constants";
+import {getEthereumContract} from "../lib/getContract"
 
 export const TwitterContext = createContext()
-
-let metamask;
-
-if (typeof window !== "undefined") {
-  metamask = window.ethereum;
-}
-
-const getEthereumContract = () => {
-  const provider = new ethers.providers.Web3Provider(metamask);
-  const signer = provider.getSigner();
-  const transactionContract = new ethers.Contract(
-    contractAddress,
-    contractABI,
-    signer
-  );
-
-  return transactionContract;
-};
 
 export const TwitterProvider = ({ children }) => {
   const [appStatus, setAppStatus] = useState('')

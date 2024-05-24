@@ -26,7 +26,7 @@ contract ProfileImageNfts is ERC721, Ownable {
         uint32 id;
         string username;
         address author;
-        uint256 timestamp;
+        string timestamp;
         string text;
         string imageUrl;
         string authorImageUrl;
@@ -152,12 +152,16 @@ contract ProfileImageNfts is ERC721, Ownable {
     ) public {
         uint32 postId = _postIdCounter;
         _postIdCounter++;
+
+        // Convert timestamp to string
+        string memory timestampStr = uint256(block.timestamp).toString();
+
         posts.push(
             Post(
                 postId,
                 _username,
                 msg.sender,
-                block.timestamp,
+                timestampStr,
                 _text,
                 _imageUrl,
                 _authorImageUrl

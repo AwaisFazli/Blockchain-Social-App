@@ -44,16 +44,20 @@ const Post = ({
   const contract = getEthereumContract();
 
   const fetchCommentsAndReplies = async () => {
-    const postComments = await contract.getCommentsByPostId(postId);
-    setComments(postComments);
-    const postReplies = {};
-    await Promise.all(
-      postComments.map(async (comment) => {
-        const commentReplies = await contract.getRepliesByCommentId(comment.id);
-        postReplies[comment.id] = commentReplies;
-      })
-    );
-    setReplies(postReplies);
+    try {
+      const postComments = await contract.getCommentsByPostId(postId);
+      setComments(postComments);
+      const postReplies = {};
+      await Promise.all(
+        postComments.map(async (comment) => {
+          const commentReplies = await contract.getRepliesByCommentId(comment.id);
+          postReplies[comment.id] = commentReplies;
+        })
+      );
+      setReplies(postReplies);
+    } catch (error) {
+      console.log(error)
+    }
   };
 
   useEffect(() => {
@@ -80,7 +84,7 @@ const Post = ({
     <div className={style.wrapper}>
       <div>
         <img
-          src={profileImageLink}
+          src={avatar}
           alt={userName}
           className={
             isProfileImageNft

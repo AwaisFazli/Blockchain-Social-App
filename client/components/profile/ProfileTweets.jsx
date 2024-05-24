@@ -1,33 +1,13 @@
 import { useEffect, useContext, useState } from 'react'
 import { TwitterContext } from '../../context/TwitterContext'
 import Post from '../Post'
-import { contractABI, contractAddress } from '../../lib/constants'
-import { ethers } from 'ethers'
-import BigNumber from 'bignumber.js';
+import {getEthereumContract} from "../../lib/getContract"
 
 const style = {
   wrapper: `no-scrollbar`,
   header: `sticky top-0 bg-[#15202b] z-10 p-4 flex justify-between items-center`,
   headerTitle: `text-xl font-bold`,
 }
-
-let metamask;
-
-if (typeof window !== "undefined") {
-  metamask = window.ethereum;
-}
-
-const getEthereumContract = () => {
-  const provider = new ethers.providers.Web3Provider(metamask);
-  const signer = provider.getSigner();
-  const transactionContract = new ethers.Contract(
-    contractAddress,
-    contractABI,
-    signer,
-  );
-
-  return transactionContract;
-};
 
 const ProfileTweets = () => {
   const { currentUser } = useContext(TwitterContext)

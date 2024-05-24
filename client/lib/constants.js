@@ -1,4 +1,3 @@
-// import ProfileImageMinterContractAbi from './ProfileImageNfts.json'
 import ProfileImageMinterContractAbi from './ProfileImageNfts.json'
 
 export const contractABI = ProfileImageMinterContractAbi.abi

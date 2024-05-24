@@ -23,8 +23,6 @@ const Home = () => {
     useContext(TwitterContext);
   const router = useRouter();
 
-  console.log(currentUser);
-
   const app = (status = appStatus) => {
     switch (status) {
       case "connected":

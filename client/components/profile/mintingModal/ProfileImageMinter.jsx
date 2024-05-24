@@ -1,30 +1,11 @@
 import { useState, useContext, useEffect } from 'react';
 import { TwitterContext } from '../../../context/TwitterContext';
 import { useRouter } from 'next/router';
-import { contractABI, contractAddress } from '../../../lib/constants';
-import { ethers } from 'ethers';
 import InitialState from './InitialState';
 import LoadingState from './LoadingState';
 import FinishedState from './FinishedState';
 import { pinJSONToIPFS, pinFileToIPFS } from '../../../lib/pinata';
-
-let metamask;
-
-if (typeof window !== "undefined") {
-  metamask = window.ethereum;
-}
-
-const getEthereumContract = () => {
-  const provider = new ethers.providers.Web3Provider(metamask);
-  const signer = provider.getSigner();
-  const transactionContract = new ethers.Contract(
-    contractAddress,
-    contractABI,
-    signer,
-  );
-
-  return transactionContract;
-};
+import {getEthereumContract} from "../../../lib/getContract"
 
 const createPinataRequestHeaders = (headers) => {
   const requestHeaders = new Headers();
