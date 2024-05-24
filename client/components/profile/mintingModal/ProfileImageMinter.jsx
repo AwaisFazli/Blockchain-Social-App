@@ -1,7 +1,6 @@
 import { useState, useContext, useEffect } from 'react';
 import { TwitterContext } from '../../../context/TwitterContext';
 import { useRouter } from 'next/router';
-import { client } from '../../../lib/client';
 import { contractABI, contractAddress } from '../../../lib/constants';
 import { ethers } from 'ethers';
 import InitialState from './InitialState';

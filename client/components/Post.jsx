@@ -64,7 +64,7 @@ const Post = ({
     setCommentLoading(true)
     await contract.createComment(postId, displayName, avatar, commentText);
     setCommentText("");
-    fetchComments();
+    fetchCommentsAndReplies();
     setRepliesText("")
     setCommentLoading(false)
   };

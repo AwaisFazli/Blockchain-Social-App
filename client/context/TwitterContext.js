@@ -1,6 +1,5 @@
 import { createContext, useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
-import { client } from '../lib/client'
 import { ethers } from 'ethers'
 import { contractABI, contractAddress } from "../lib/constants";
 
@@ -38,7 +37,6 @@ export const TwitterProvider = ({ children }) => {
   useEffect(() => {
     if (!currentAccount && appStatus == 'connected') return
     getCurrentUserDetails(currentAccount)
-    fetchTweets()
   }, [currentAccount, appStatus])
 
   /**
@@ -53,8 +51,6 @@ export const TwitterProvider = ({ children }) => {
       if (addressArray.length > 0) {
         setAppStatus('connected')
         setCurrentAccount(addressArray[0])
-
-        createUserAccount(addressArray[0])
       } else {
         router.push('/')
         setAppStatus('notConnected')
@@ -79,7 +75,6 @@ export const TwitterProvider = ({ children }) => {
 
       if (addressArray.length > 0) {
         setCurrentAccount(addressArray[0])
-        createUserAccount(addressArray[0])
       } else {
         router.push('/')
         setAppStatus('notConnected')
@@ -89,31 +84,6 @@ export const TwitterProvider = ({ children }) => {
     }
   }
 
-  /**
-   * Creates an account in Sanity DB if the user does not already have one
-   * @param {String} userAddress Wallet address of the currently logged in user
-   */
-  const createUserAccount = async (userAddress = currentAccount) => {
-    if (!window.ethereum) return setAppStatus('noMetaMask')
-    try {
-      const userDoc = {
-        _type: 'users',
-        _id: userAddress,
-        name: 'Unnamed',
-        isProfileImageNft: false,
-        profileImage:
-          'https://about.twitter.com/content/dam/about-twitter/en/brand-toolkit/brand-download-img-1.jpg.twimg.1920.jpg',
-        walletAddress: userAddress,
-      }
-
-      await client.createIfNotExists(userDoc)
-
-      setAppStatus('connected')
-    } catch (error) {
-      router.push('/')
-      setAppStatus('error')
-    }
-  }
 
   /**
    * Generates NFT profile picture URL or returns the image URL if it's not an NFT
@@ -129,51 +99,6 @@ export const TwitterProvider = ({ children }) => {
     }
   }
 
-  /**
-   * Gets all the tweets stored in Sanity DB.
-   */
-  const fetchTweets = async () => {
-    const query = `
-      *[_type == "tweets"]{
-        "author": author->{name, walletAddress, profileImage, isProfileImageNft},
-        tweet,
-        timestamp
-      }|order(timestamp desc)
-    `
-
-    // setTweets(await client.fetch(query))
-
-    const sanityResponse = await client.fetch(query)
-
-    setTweets([])
-
-    /**
-     * Async await not available with for..of loops.
-     */
-    sanityResponse.forEach(async item => {
-      const profileImageUrl = await getNftProfileImage(
-        item.author.profileImage,
-        item.author.isProfileImageNft,
-      )
-
-      if (item.author.isProfileImageNft) {
-        const newItem = {
-          tweet: item.tweet,
-          timestamp: item.timestamp,
-          author: {
-            name: item.author.name,
-            walletAddress: item.author.walletAddress,
-            profileImage: profileImageUrl,
-            isProfileImageNft: item.author.isProfileImageNft,
-          },
-        }
-
-        setTweets(prevState => [...prevState, newItem])
-      } else {
-        setTweets(prevState => [...prevState, item])
-      }
-    })
-  }
 
   /**
    * Gets the current user details from Sanity DB.
@@ -182,23 +107,6 @@ export const TwitterProvider = ({ children }) => {
    */
   const getCurrentUserDetails = async (userAccount = currentAccount) => {
     if (appStatus !== 'connected') return
-
-    // const query = `
-    //   *[_type == "users" && _id == "${userAccount}"]{
-    //     "tweets": tweets[]->{timestamp, tweet}|order(timestamp desc),
-    //     name,
-    //     profileImage,
-    //     isProfileImageNft,
-    //     coverImage,
-    //     walletAddress
-    //   }
-    // `
-    // const response = await client.fetch(query)
-
-    // const profileImageUri = await getNftProfileImage(
-    //   response[0].profileImage,
-    //   response[0].isProfileImageNft,
-    // )
 
     const contract = await getEthereumContract();
     const response = await contract.getUserProfile(currentAccount)
@@ -220,7 +128,6 @@ export const TwitterProvider = ({ children }) => {
         currentAccount,
         connectWallet,
         tweets,
-        fetchTweets,
         setAppStatus,
         getNftProfileImage,
         currentUser,

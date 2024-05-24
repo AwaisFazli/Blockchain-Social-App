@@ -10,12 +10,12 @@ import { useRouter } from "next/router";
 import LandingPage from "../components/Landing Page/index";
 
 const style = {
-  wrapper: `flex h-[100vh] w-[100vw] select-none bg-lightGray text-white`,
-  content: `max-w-[1400px] w-2/3 flex justify-between`,
-  loginContainer: `w-full h-full bg-lightGray flex flex-col justify-center items-center pb-48`,
-  walletConnectButton: `text-2xl text-black bg-white font-bold mb-[-3rem] mt-[3rem] px-6 py-4 rounded-full cursor-pointer hover:bg-[#d7dbdc]`,
-  loginContent: `text-3xl font-bold text-center mt-24`,
-  setProfileStyle: `bg-[#1d9bf0] hover:bg-[#1b8cd8] flex items-center justify-center font-bold rounded-3xl h-[50px] mt-[20px] cursor-pointer flex-[2] border-r border-l border-[#38444d] overflow-y-scroll`,
+  wrapper: "flex justify-center h-screen w-screen select-none bg-[#15202b] text-white",
+  content: "max-w-[1400px] w-2/3 flex justify-between",
+  loginContainer: "w-full h-full bg-lightGray flex flex-col justify-center items-center pb-48",
+  walletConnectButton: "text-2xl text-black bg-white font-bold mb-[-3rem] mt-[3rem] px-6 py-4 rounded-full cursor-pointer hover:bg-[#d7dbdc]",
+  loginContent: "text-3xl font-bold text-center mt-24",
+  setProfileStyle: "bg-[#1d9bf0] hover:bg-[#1b8cd8] flex items-center justify-center font-bold rounded-3xl h-[50px] mt-[20px] cursor-pointer flex-[2] border-r border-l border-[#38444d] overflow-y-scroll",
 };
 
 const Home = () => {

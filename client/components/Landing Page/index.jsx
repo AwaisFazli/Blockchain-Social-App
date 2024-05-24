@@ -10,7 +10,7 @@ import { MdPerson } from "react-icons/md";
 
 const LandingPage = () => {
   return (
-    <div className="flex flex-col bg-lightGray overflow-x-hidden">
+    <div className="flex flex-col bg-[#15202b] overflow-x-hidden">
       <NavBar />
       <div className="flex flex-col">
         <div className="flex flex-col">
@@ -20,13 +20,13 @@ const LandingPage = () => {
                 Embrace the Future of Trustworthy Social Networking
               </p>
             </div>
-            <Image src={blueCone}></Image>
+            <Image src={blueCone} className="hover:translate-y-16 transition-all duration-300"></Image>
           </div>
-          <div className="flex justify-center py-[5rem] bg-lightGray">
+          <div className="flex justify-center py-[5rem] bg-[#15202b] hover:opacity-50 transition-all duration-500">
             <Image src={blueLine} width={2000} height={50}></Image>
           </div>
         </div>
-        <div className="bg-lightGray relative">
+        <div className="bg-[#15202b] relative">
           <Image src={lightBeam} width={2000} height={1000}></Image>
           <div className="absolute top-[2rem] lg:top-[10rem] xl:top-[15rem] right-[10rem]">
             <div className="flex m-4">

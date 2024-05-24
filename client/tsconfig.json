@@ -15,6 +15,6 @@
     "jsx": "preserve",
     "incremental": true
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "components/Post.jsx", "components/home/Feed.jsx", "components/home/Feed.jsx", "components/profile/ProfileTweets.jsx", "components/profile/mintingModal/InitialState.jsx", "components/profile/mintingModal/ProfileImageMinter.jsx"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "components/Post.jsx", "components/home/Feed.jsx", "components/home/Feed.jsx", "components/profile/ProfileTweets.jsx", "components/profile/mintingModal/InitialState.jsx", "components/profile/mintingModal/ProfileImageMinter.jsx", "pages/profile.jsx", "pages/index.jsx", "pages/_app.jsx", "components/Sidebar.jsx", "components/Widgets.jsx", "components/SidebarOption.jsx", "components/profile/ProfileHeader.jsx", "components/profile/mintingModal/LoadingState.jsx", "components/profile/mintingModal/FinishedState.jsx"],
   "exclude": ["node_modules"]
 }
