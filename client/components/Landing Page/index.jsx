@@ -8,10 +8,10 @@ import { FaCrown } from "react-icons/fa";
 import { RiChatPrivateLine } from "react-icons/ri";
 import { MdPerson } from "react-icons/md";
 
-const LandingPage = () => {
+const LandingPage = ({metamaskFound}) => {
   return (
     <div className="flex flex-col bg-[#15202b] overflow-x-hidden">
-      <NavBar />
+      <NavBar metamaskFound={metamaskFound} />
       <div className="flex flex-col">
         <div className="flex flex-col">
           <div className="flex justify-between items-center py-[7rem] xl:px-[10rem] px-[5rem]">

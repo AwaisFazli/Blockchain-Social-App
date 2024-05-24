@@ -29,10 +29,10 @@ const Home = () => {
         return userLoggedIn;
 
       case "notConnected":
-        return <LandingPage />;
+        return <LandingPage metamaskFound={true} />;
 
       case "noMetaMask":
-        return noMetaMaskFound;
+        return <LandingPage metamaskFound={false} />;
 
       case "error":
         return error;

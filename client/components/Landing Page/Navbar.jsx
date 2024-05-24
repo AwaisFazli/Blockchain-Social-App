@@ -5,7 +5,7 @@ import { TwitterContext } from "../../context/TwitterContext";
 
 import Image from "next/image";
 
-export const NavBar = () => {
+export const NavBar = ({metamaskFound}) => {
   const { connectWallet } = useContext(TwitterContext);
   return (
     <nav className="flex w-[100vw] p-8 justify-between">
@@ -22,12 +22,13 @@ export const NavBar = () => {
           <Image src={metamaskLogo} width={30} height={30} />
         </li>
         <li>
-          <button
+        {metamaskFound ? <button
             className="bg-gradient-to-r from-primaryBlue to-secondaryBlue text-white font-bold py-2 px-4 ml-6 rounded"
             onClick={() => connectWallet()}
           >
             Connect Wallet
-          </button>
+          </button> : <p>No MetaMask/Account Found</p>}
+          
         </li>
       </ul>
     </nav>
