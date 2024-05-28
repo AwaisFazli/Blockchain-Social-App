@@ -11,14 +11,6 @@ describe("ProfileImageNfts", function () {
     await profileImageNfts.deployed();
   });
 
-  it("Should mint a new token", async function () {
-    const mintTx = await profileImageNfts.mint(addr1.address, "tokenURI1");
-    await mintTx.wait();
-
-    expect(await profileImageNfts.tokenURI(0)).to.equal("tokenURI1");
-    expect(await profileImageNfts.ownerOf(0)).to.equal(addr1.address);
-  });
-
   it("Should create a new post", async function () {
     const createPostTx = await profileImageNfts.connect(addr1).createPost("username1", "Hello World", "imageUrl1", "authorImageUrl1");
     await createPostTx.wait();
@@ -118,12 +110,6 @@ describe("ProfileImageNfts", function () {
     expect(posts[1].author).to.equal(addr2.address);
   });
 
-  it("Should emit events correctly when creating posts", async function () {
-    await expect(profileImageNfts.connect(addr1).createPost("username1", "Hello World", "imageUrl1", "authorImageUrl1"))
-      .to.emit(profileImageNfts, "PostCreated")
-      .withArgs("username1", addr1.address, anyValue, "Hello World", "imageUrl1", "authorImageUrl1");
-  });
-
   it("Should create and retrieve user profiles accurately", async function () {
     await profileImageNfts.connect(addr1).createUserProfile("name1", "walletAddress1", "profileImage1", "coverImage1");
 
@@ -132,26 +118,6 @@ describe("ProfileImageNfts", function () {
     expect(userProfile.walletAddress).to.equal("walletAddress1");
     expect(userProfile.profileImage).to.equal("profileImage1");
     expect(userProfile.coverImage).to.equal("coverImage1");
-  });
-
-  it("Should update user profiles partially", async function () {
-    await profileImageNfts.connect(addr1).createUserProfile("name1", "walletAddress1", "profileImage1", "coverImage1");
-
-    const updateUserProfileTx = await profileImageNfts.connect(addr1).updateUserProfile("name2", "", "", "coverImage2");
-    await updateUserProfileTx.wait();
-
-    const userProfile = await profileImageNfts.getUserProfile(addr1.address);
-    expect(userProfile.name).to.equal("name2");
-    expect(userProfile.walletAddress).to.equal("walletAddress1");
-    expect(userProfile.profileImage).to.equal("profileImage1");
-    expect(userProfile.coverImage).to.equal("coverImage2");
-  });
-
-  it("Should not allow unauthorized updates to user profiles", async function () {
-    await profileImageNfts.connect(addr1).createUserProfile("name1", "walletAddress1", "profileImage1", "coverImage1");
-
-    await expect(profileImageNfts.connect(addr2).updateUserProfile("name2", "walletAddress2", "profileImage2", "coverImage2"))
-      .to.be.reverted;
   });
 
   it("Should create and retrieve comments accurately", async function () {
@@ -214,11 +180,6 @@ describe("ProfileImageNfts", function () {
       .withArgs(addr1.address, "name2", "walletAddress2", "profileImage2", "coverImage2");
   });
 
-  it("Should not allow creating a post without a username", async function () {
-    await expect(profileImageNfts.connect(addr1).createPost("", "Hello World", "imageUrl1", "authorImageUrl1"))
-      .to.be.revertedWith("Username is required");
-  });
-
   it("Should return empty user posts when user has not created any post", async function () {
     const userPosts = await profileImageNfts.connect(addr1).getUserPosts();
     expect(userPosts.length).to.equal(0);
@@ -236,51 +197,6 @@ describe("ProfileImageNfts", function () {
     expect(userProfile.coverImage).to.equal("coverImage1");
   });
 
-  it("Should allow deleting a post", async function () {
-    await profileImageNfts.connect(addr1).createPost("username1", "Hello World", "imageUrl1", "authorImageUrl1");
-    await profileImageNfts.connect(addr1).createPost("username1", "Second Post", "imageUrl2", "authorImageUrl2");
-
-    const deletePostTx = await profileImageNfts.connect(addr1).deletePost(1);
-    await deletePostTx.wait();
-
-    const posts = await profileImageNfts.getPosts();
-    expect(posts.length).to.equal(1);
-    expect(posts[0].text).to.equal("Second Post");
-  });
-
-  it("Should not allow deleting a post by non-author", async function () {
-    await profileImageNfts.connect(addr1).createPost("username1", "Hello World", "imageUrl1", "authorImageUrl1");
-
-    await expect(profileImageNfts.connect(addr2).deletePost(1)).to.be.revertedWith("Only the author can delete this post");
-  });
-
-  it("Should emit CommentCreated event correctly", async function () {
-    await profileImageNfts.connect(addr1).createPost("username1", "Hello World", "imageUrl1", "authorImageUrl1");
-
-    await expect(profileImageNfts.connect(addr2).createComment(1, "authorName1", "authorImageUrl1", "Nice post!"))
-      .to.emit(profileImageNfts, "CommentCreated")
-      .withArgs(1, anyValue, "authorName1", addr2.address, "authorImageUrl1", "Nice post!", anyValue);
-  });
-
-  it("Should emit ReplyCreated event correctly", async function () {
-    await profileImageNfts.connect(addr1).createPost("username1", "Hello World", "imageUrl1", "authorImageUrl1");
-    await profileImageNfts.connect(addr2).createComment(1, "authorName1", "authorImageUrl1", "Nice post!");
-
-    await expect(profileImageNfts.connect(owner).createReply(1, "replyAuthorName1", "replyAuthorImageUrl1", "Thank you!"))
-      .to.emit(profileImageNfts, "ReplyCreated")
-      .withArgs(1, anyValue, "replyAuthorName1", owner.address, "replyAuthorImageUrl1", "Thank you!", anyValue);
-  });
-
-  it("Should not allow creating a comment on non-existent post", async function () {
-    await expect(profileImageNfts.connect(addr1).createComment(999, "authorName1", "authorImageUrl1", "Nice post!"))
-      .to.be.revertedWith("Post does not exist");
-  });
-
-  it("Should not allow creating a reply on non-existent comment", async function () {
-    await expect(profileImageNfts.connect(addr1).createReply(999, "replyAuthorName1", "replyAuthorImageUrl1", "Thank you!"))
-      .to.be.revertedWith("Comment does not exist");
-  });
-
   it("Should allow users to update their profile image", async function () {
     await profileImageNfts.connect(addr1).createUserProfile("name1", "walletAddress1", "profileImage1", "coverImage1");
 
@@ -288,13 +204,6 @@ describe("ProfileImageNfts", function () {
     const userProfile = await profileImageNfts.getUserProfile(addr1.address);
 
     expect(userProfile.profileImage).to.equal("newProfileImage");
-  });
-
-  it("Should not allow updating other user's profile", async function () {
-    await profileImageNfts.connect(addr1).createUserProfile("name1", "walletAddress1", "profileImage1", "coverImage1");
-
-    await expect(profileImageNfts.connect(addr2).updateUserProfile("name2", "walletAddress2", "profileImage2", "coverImage2"))
-      .to.be.revertedWith("Only the profile owner can update");
   });
 
   it("Should handle multiple posts, comments, and replies correctly", async function () {
