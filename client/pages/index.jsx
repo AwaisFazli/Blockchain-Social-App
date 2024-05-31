@@ -10,7 +10,7 @@ import { useRouter } from "next/router";
 import LandingPage from "../components/Landing Page/index";
 
 const style = {
-  wrapper: "flex justify-center max-h-screen w-screen select-none bg-[#15202b] text-white overflow-hidden",
+  wrapper: "flex justify-center min-h-scree max-h-screen h-screen w-screen select-none bg-[#15202b] text-white overflow-hidden",
   content: "max-w-[1400px] w-2/3 flex justify-between",
   loginContainer: "w-full h-full bg-lightGray flex flex-col justify-center items-center pb-48",
   walletConnectButton: "text-2xl text-black bg-white font-bold mb-[-3rem] mt-[3rem] px-6 py-4 rounded-full cursor-pointer hover:bg-[#d7dbdc]",
