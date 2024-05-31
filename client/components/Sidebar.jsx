@@ -45,7 +45,6 @@ function Sidebar({ initialSelectedIcon }) {
   return (
     <div className={style.wrapper}>
       <div className={style.twitterIconContainer}>
-        {/* <VscTwitter /> */}
         <li className="flex">
           <Image src={connextLogo} width={20} height={20} />
         </li>
