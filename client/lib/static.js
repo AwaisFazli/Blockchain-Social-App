@@ -6,12 +6,6 @@ export const news = [
       'https://media.licdn.com/dms/image/D4D03AQFmRxQfBU-nIQ/profile-displayphoto-shrink_800_800/0/1671643615487?e=2147483647&v=beta&t=uBdpAeBb3rkqOA-jzsfvv0tL3XT_El4UAlJ3LKzSQYg',
   },
   {
-    category: 'Databases • Trending',
-    title:
-      'Sanity is giving you free Boosted plan, use --coupon Maima-Ismail',
-    image: 'https://avatars.githubusercontent.com/u/17177659?s=280&v=4',
-  },
-  {
     category: 'Web3.0 • Trending',
     title: 'Blockchain developers demand rises',
     image:
