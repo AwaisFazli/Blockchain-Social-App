@@ -13,6 +13,8 @@ import Modal from 'react-modal';
 import { customStyles } from '../lib/constants';
 import ProfileImageMinter from './profile/mintingModal/ProfileImageMinter';
 import ProfileUpdater from './profile/mintingModal/ProfileUpdater';
+import connextLogo from "../assets/connext-logo.png";
+import Image from 'next/image';
 import {
   BsBookmark,
   BsBookmarkFill,
@@ -43,7 +45,10 @@ function Sidebar({ initialSelectedIcon }) {
   return (
     <div className={style.wrapper}>
       <div className={style.twitterIconContainer}>
-        <VscTwitter />
+        {/* <VscTwitter /> */}
+        <li className="flex">
+          <Image src={connextLogo} width={20} height={20} />
+        </li>
       </div>
       <div className={style.navContainer}>
         <SidebarOption
