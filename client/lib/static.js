@@ -49,9 +49,4 @@ export const whoToFollow = [
     handle: '@wasi-abdullah',
     avatar: 'https://media.licdn.com/dms/image/D4D35AQEgVQ54yxl-Ug/profile-framedphoto-shrink_200_200/0/1694036928789?e=1717765200&v=beta&t=whuITprHN-QAzfnKefZajmyvEFHdlfqtEdUiFgYPoGc',
   },
-  {
-    name: 'Sanity.io',
-    handle: '@sanity_io',
-    avatar: 'https://avatars.githubusercontent.com/u/17177659?s=280&v=4',
-  },
 ]
